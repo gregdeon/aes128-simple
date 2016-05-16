@@ -1,5 +1,5 @@
 /* 
-ChipWhisperer Artix Target - Registers for crypto modules.
+ChipWhisperer Artix Target - Basic USB interface with memory registers.
 
 Copyright (c) 2016, NewAE Technology Inc.
 All rights reserved.
@@ -27,15 +27,16 @@ either expressed or implied, of NewAE Technology Inc.
 
 `timescale 1ns / 1ps
 `default_nettype none 
+
 //Defines how long after we keep data-bus active - shouldn't need to change
 `define REG_RDDLY_LEN 3
 
 module usb_module(
-    input wire        clk_usb,      // Raw clock signal from external USB connections
+    input wire        clk_usb,  // Raw clock signal from external USB connections
     inout wire [7:0]  data,     // Data bus
     input wire [20:0] addr,     // Address bus
     input wire        rd_en,    // !RD: low when addr valid for read
-    input wire        wr_en,      // !WR: low when data+addr valid for write
+    input wire        wr_en,    // !WR: low when data+addr valid for write
     input wire        cen,      // !CE: not used here
     input wire        trigger,  // High when trigger requested
     

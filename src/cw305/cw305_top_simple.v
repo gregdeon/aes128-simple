@@ -1,5 +1,6 @@
 /* 
-ChipWhisperer Artix Target - Example of communicating through USB
+ChipWhisperer Artix Target - Barebones top-level module for the CW305 target,
+    including connections to the AES128 module
 
 Copyright (c) 2016, NewAE Technology Inc.
 All rights reserved.
@@ -38,7 +39,6 @@ module cw305_top(
     input wire        usb_cen,      // !CE not used
     input wire        usb_trigger,  // High when trigger requested
     
-    
     // Switches and LEDs
     input wire sw1,         // Switch J16
     input wire sw2,         // Switch K16
@@ -48,7 +48,6 @@ module cw305_top(
     output wire led1,       // Red LED,   LED7
     output wire led2,       // Green LED, LED5
     output wire led3,       // Blue LED,  LED6
-    
     
     // PLL
     input wire pll_clk1,    //PLL Clock Channel #1
