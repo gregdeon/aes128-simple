@@ -12,7 +12,7 @@ module aes_crypt(
     input wire trigger,
     output reg done,
     input wire clk,
-    input wire reset,
+    input wire reset
     );
 
 // Local variables

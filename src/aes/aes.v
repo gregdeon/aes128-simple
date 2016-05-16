@@ -11,7 +11,7 @@ module aes(
     input wire trigger,
     output reg done,
     input wire clk,
-    input wire reset,
+    input wire reset
     );
     
 // State machine setup
@@ -60,7 +60,7 @@ aes_crypt my_aes_crypt(
     .trigger(trigger_crypt),
     .done(done_crypt),
     .clk(clk),
-    .reset(reset),
+    .reset(reset)
     );
 
 	
