@@ -4,14 +4,26 @@ A simple, barebones AES-128 encryption implementation in Verilog.
 ## What is this?
 This project is intended to be a barebones, simple-as-possible implementation of AES-128 encryption in Verilog. 
 
-The source in this repo has three components:
+The source in this repo has four components:
 * `src/aes/`: The AES-128 implementation. The module `aes.v` is the top-level module that can be instantiated in other Verilog code.
+* `src/sim/`: A testbench for simulating the AES module. 
 * `src/cw305/`: A USB driver for the ChipWhisperer CW305 Artix-7 FPGA target board. This code connects the AES module to the USB interface on the CW305 board so it can be controlled from a computer.
 * `src/python/`: A Python script for uploading code onto the CW305 board and triggering the FPGA code. This script uses the ChipWhisperer libraries.
 
 Check out http://chipwhisperer.com for more information about this board and the code libraries that are involved.
 
-## Example
+## Results
+Vivado's Project Summary after implementation includes the following table:
+
+```
+Resource | Utilization | Available | Utilization %
+---------|-------------|-----------|---------------
+LUT      | 4470        | 20800     | 21.49
+FF       | 2033        | 41600     | 4.89
+IO       | 35          | 170       | 20.59
+BUFG     | 3           | 32        | 9.38
+```
+
 Running the Python script with the default key and plaintext prints the output
 ```
 plain:  00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
