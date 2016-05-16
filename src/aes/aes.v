@@ -1,24 +1,8 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05/13/2016 11:25:30 AM
-// Design Name: 
-// Module Name: aes
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+// aes.v
+// The main interface for the AES-128 implementation
 
+
+`timescale 1ns / 1ps
 
 module aes(
     input wire [127:0] key,
@@ -28,11 +12,17 @@ module aes(
     output reg done,
     input wire clk,
     input wire reset,
-    
-    output wire [127:0] state
     );
     
 // State machine setup
+// Procedure is:
+// - Idle: wait until we're asked to do work
+// - Key_Start: tell the key expansion module to do its job
+// - Key: wait for the key expansion module to finish
+// - Crypt_Start: tell the encryption module to work
+// - Crypt: wait for the encryption to finish
+// - Done: signal that we're finished
+// 8 states = 3 bits
 localparam STATE_idle        = 3'd0,
            STATE_key_start   = 3'd1,
            STATE_key         = 3'd2,
@@ -46,12 +36,13 @@ reg [2:0] currentState;
 reg [2:0] nextState;
 
 // Internals
-wire [1407:0] w;    // Key schedule
-reg trigger_key;
-wire done_key;
-reg trigger_crypt;
-wire done_crypt;
+wire [1407:0] w;    // Key schedule (44 words)
+reg trigger_key;	// Control for the key module
+wire done_key;		//
+reg trigger_crypt;	// Control for the crypto module
+wire done_crypt;	//
 
+// Key expansion module
 aes_key my_aes_key(
     .key(key),
     .w(w),
@@ -60,7 +51,8 @@ aes_key my_aes_key(
     .clk(clk),
     .reset(reset)
     );
-    
+	
+// Encryption module
 aes_crypt my_aes_crypt(
     .w(w),
     .in(plaintext),
@@ -69,10 +61,9 @@ aes_crypt my_aes_crypt(
     .done(done_crypt),
     .clk(clk),
     .reset(reset),
-    
-    .stateFlat(state)
     );
 
+	
 // Actions for each state
 always @(posedge clk)
 begin
@@ -107,6 +98,7 @@ begin
         end
     endcase
 end
+
 
 // State transition logic
 always @(*)
@@ -146,6 +138,7 @@ begin
         end
     endcase
 end
+
 
 // Change state at each clock edge
 always @ (posedge clk)

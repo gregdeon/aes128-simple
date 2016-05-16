@@ -1,10 +1,13 @@
-`timescale 1ns / 1ps
-
+// aes_key.v
+// The key expander for the AES-128 module.
+// Turns a 128 bit key into a 44 word key schedule.
+//
 // Potential improvements:
 // - Main loop is 3 states (load temp, reload transformed temp, apply temp)
 //   It could probably be 2 (load temp, apply temp (or transformed temp)
 //   Key scheduler would run in 2/3 of the time
 
+`timescale 1ns / 1ps
 
 module aes_key(
     input  wire [ 127:0] key,   // The 128-bit key
@@ -16,6 +19,12 @@ module aes_key(
     );
 
 // State machine setup
+// - Idle: Wait for the main controller to tell us to work
+// - Start: Set up the first 4 words of the key schedule
+// - Temp: load w[i-1] into the variable temp
+// - Sub: if appropriate, perform the RotWord(SubWord(temp)) ^ Rcon[i/4] process
+// - Xor: set w[i] = temp ^ w[i-4]
+// - Done: signal that the key schedule is ready
 localparam STATE_idle  = 3'd0,
            STATE_start = 3'd1,
            STATE_temp  = 3'd2,
@@ -36,13 +45,16 @@ wire [31:0] temp_sub;
 wire [31:0] temp_rot;
 wire [31:0] temp_rcon;
 
+// Substitution box, used for SubWord()
 s_box my_s_box(
     .in(temp),
     .out(temp_sub)
     );
 
+// RotWord() output
 assign temp_rot = (temp_sub << 8) | (temp_sub >> 24);
 
+// Values used for Rcon[i/4]
 wire [31:0] rcon [10:0];
 assign rcon[0]  = 32'h00000000;
 assign rcon[1]  = 32'h01000000;

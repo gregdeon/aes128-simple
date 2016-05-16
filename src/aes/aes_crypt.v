@@ -1,24 +1,8 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05/13/2016 12:15:26 PM
-// Design Name: 
-// Module Name: aes_crypt
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+// aes_crypt.v
+// The module used to perform AES-128 encryption on the plaintext.
+// Relies on the aes_key module to generate a key schedule (w) first
 
+`timescale 1ns / 1ps
 
 module aes_crypt(
     input wire [1407:0] w,
@@ -29,22 +13,21 @@ module aes_crypt(
     output reg done,
     input wire clk,
     input wire reset,
-    
-    output wire [127:0] stateFlat
     );
-
 
 // Local variables
 genvar i;
 genvar j;
 
-// DEBUG
-for(i = 0; i < 4; i=i+1)
-begin
-    assign stateFlat[32*i +: 32] = state[i];
-end
     
 // State machine
+// - Idle: wait for the trigger
+// - Start: Load the input plaintext into the state matrix
+// - Sub: perform the SubBytes() routine
+// - Shift: perform the ShiftRows() routine
+// - Mix: perform the MixColumns() routine
+// - Add: perform the AddRoundKey() routine
+// - Done: signal that we're finished
 localparam STATE_idle  = 3'd0,
            STATE_start = 3'd1,
            STATE_sub   = 3'd2,
@@ -60,16 +43,15 @@ reg [3:0] roundNum;
 
 
 // Internals
-reg [31:0] state [3:0];            // state[0] is column with x=0, state[1] is x=1...
+reg [31:0] state [3:0];      // state[0] is column with x=0, state[1] is x=1...
 
 // SubBytes()
+// Use 4 s-boxes (Substitute one word each, so 1 s-box for each column)
 wire [31:0] state_subbytes [3:0];
-
 s_box s_box_0(
     .in(state[0]),
     .out(state_subbytes[0])
 );
-
 s_box s_box_1(
     .in(state[1]),
     .out(state_subbytes[1])
@@ -85,6 +67,7 @@ s_box s_box_3(
 
 
 // ShiftRows()
+// Hard-wire the ShiftRows() output
 wire [31:0] state_shiftrows [3:0];
 for (i = 0; i < 4; i=i+1) begin
     assign state_shiftrows[i][31:24] = state[(i+0)%4][31:24];
@@ -94,13 +77,12 @@ for (i = 0; i < 4; i=i+1) begin
 end
 
 // MixColumns()
+// Hard-wire the MixColumns() output
 wire [31:0] state_mixcolumns [3:0];
 function [7:0] xtime;
     input [7:0] x;
     xtime = x[7] ? ((x << 1) ^ 8'h1b) : (x << 1);
 endfunction
-
-
 for(i = 0; i < 4; i=i+1) begin: for1
     for(j = 0; j < 4; j=j+1)
     begin
