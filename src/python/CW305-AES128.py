@@ -35,6 +35,11 @@ time.sleep(0.5)
 # See above for note on backwards read
 ciphertext = cw.fpga_read(addr_cipher, 16)[::-1]
 
+''' Prints:
+plain:  00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
+key:    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+cipher: 69 C4 E0 D8 6A 7B 04 30 D8 CD B7 80 70 B4 C5 5A
+'''
 print "plain:  " + " ".join(["%02X"%c for c in plaintext])
 print "key:    " + " ".join(["%02X"%c for c in key])
 print "cipher: " + " ".join(["%02X"%c for c in ciphertext])
